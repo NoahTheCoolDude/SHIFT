@@ -12,3 +12,4 @@ Co-op physics-puzzle game. See CLAUDE.md for design rules, Docs/ for details.
 - Don't commit Library/ (gitignored)
 - Don't edit the other dev's scenes/prefabs — they don't merge
 - Don't add a modifier as bespoke code — it's a ScriptableObject
+the greatest modifier physics co-op friendslop game OAT. credit to claude for the coding. 
