@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 267d2c858c15f9549918d5774780574c, type: 3}
+  m_Name: Heavy
+  m_EditorClassIdentifier: Assembly-CSharp::Shift.Modifiers.ModifierDefinition
+  _displayName: Heavy
+  _tint: {r: 0.78, g: 0.45, b: 0.25, a: 1}
+  _override:
+    Set: 3
+    Mass: 3
+    Friction: 0.9
+    Bounce: 0
+    GravityDirection: {x: 0, y: -1, z: 0}
+    GravityStrength: 1
+    Adhesion: 0
+    Ghost: 0
+    Charge: 0
+    TimeRate: 1
+  _interactions:
+  - WithModifier: {fileID: 0}
+    WithEnvironment: Ice
+    Expected: "Grips where a normal player slides \u2014 friction combines by Maximum."
+  - WithModifier: {fileID: 0}
+    WithEnvironment: Seesaw
+    Expected: Tips a balance that a normal player cannot.
+  - WithModifier: {fileID: 0}
+    WithEnvironment: Magnet
+    Expected: Too massive to be pulled off a surface by a magnetic field.
