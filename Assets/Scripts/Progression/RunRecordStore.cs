@@ -29,7 +29,7 @@ namespace Shift.Progression
         public RunRecordStore(string directory = null)
         {
             string folder = string.IsNullOrEmpty(directory) ? Application.persistentDataPath : directory;
-            _path = Path.Combine(folder, FileName);
+            _path = System.IO.Path.Combine(folder, FileName);
         }
 
         public string Path => _path;
