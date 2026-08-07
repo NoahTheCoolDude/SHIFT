@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 267d2c858c15f9549918d5774780574c, type: 3}
+  m_Name: Frog
+  m_EditorClassIdentifier: Assembly-CSharp::Shift.Modifiers.ModifierDefinition
+  _displayName: Frog
+  _tint: {r: 0.35, g: 0.78, b: 0.35, a: 1}
+  _override:
+    Set: 4
+    Mass: 2
+    Friction: 0.6
+    Bounce: 0.9
+    GravityDirection: {x: 0, y: -1, z: 0}
+    GravityStrength: 1
+    Adhesion: 0
+    Ghost: 0
+    Charge: 0
+    TimeRate: 1
+  _interactions:
+  - WithModifier: {fileID: 0}
+    WithEnvironment: Trampoline
+    Expected: "Bounce stacks with the surface \u2014 clears heights nothing else
+      reaches."
+  - WithModifier: {fileID: 0}
+    WithEnvironment: LowGravity
+    Expected: Long floaty arcs; the bounce carries much further per hop.
+  - WithModifier: {fileID: 0}
+    WithEnvironment: Sticky
+    Expected: Sticky floor kills the bounce, so it becomes a trap for Frog.

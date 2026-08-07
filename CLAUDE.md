@@ -110,6 +110,14 @@ Budget: ~3–5 days of work, 2–4 weeks calendar (buffer for real-world lag bug
 the 8 primitives applied locally single-player, modular physics prop kit, one
 grey-box test room, loadout UI mockup.
 
+Progress on that list (detail + known bugs in `Docs/status.md`):
+- [x] Character controller, camera, grab/carry, jump feel
+- [x] Primitive engine — 6 of 8 primitives live (ADHESION and CHARGE are not)
+- [x] One grey-box test room — Zone 01 "Sluice"
+- [x] Run framework: timer, splits, checkpoints, respawn, personal bests
+- [ ] Loadout UI — number keys only so far
+- [ ] Netcode spike — **not started.** NGO is not installed.
+
 **Held until the spike passes:** real levels, modifiers that spawn/destroy
 objects mid-run, anything expensive to rewrite.
 
@@ -168,6 +176,9 @@ sequence breaks rather than patching them.
 
 ## Conventions
 
+- **Zone** = a level. **Field** = a trigger volume that imposes GRAVITY or TIME_RATE on whatever
+  is inside it. These were the same word once and it collided badly — `Assets/Data/Zones` held
+  physics volumes while `Assets/Scenes/Zones` held levels. Keep them distinct.
 - C#. PascalCase public, `_camelCase` private fields.
 - One MonoBehaviour per file, filename == class name.
 - Modifier definitions live in `Assets/Data/Modifiers/<Category>/` as
