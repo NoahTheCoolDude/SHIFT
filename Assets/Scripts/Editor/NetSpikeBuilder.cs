@@ -50,6 +50,7 @@ namespace Shift.EditorTools
             CreateFloor();
             CreateCubes();
             SpikeSpawnPoints spawns = CreateSpawnPoints();
+            CreateDesyncDetector();
             CreateNetworkManager(playerPrefab);
 
             Directory.CreateDirectory(SceneFolder);
@@ -63,6 +64,8 @@ namespace Shift.EditorTools
                 "For a second peer, make a build and run it alongside the editor. WASD moves, space jumps, " +
                 "mouse looks, Esc frees the cursor for the host/join panel, F3 toggles the stats readout. " +
                 $"{CubeCount} cubes are host-authoritative; the capsule is owner-authoritative. " +
+                "Stand on a cube to see the platform rider attach (toggle _riderEnabled on the player " +
+                "prefab at runtime to A/B it), and watch the desync line on the client. " +
                 (spawns != null ? "Four spawn points wired." : "WARNING: spawn points missing."));
         }
 
@@ -170,6 +173,17 @@ namespace Shift.EditorTools
             return spawns;
         }
 
+        /// <summary>
+        /// Scene-placed NetworkObject, so NGO spawns it automatically and its RPCs have an identity
+        /// to travel on. The NetworkManager itself cannot carry them — it is not a NetworkObject.
+        /// </summary>
+        private static void CreateDesyncDetector()
+        {
+            GameObject detector = new GameObject("DesyncDetector");
+            detector.AddComponent<NetworkObject>();
+            detector.AddComponent<SpikeDesyncDetector>();
+        }
+
         private static GameObject BuildPlayerPrefab()
         {
             Directory.CreateDirectory(PrefabFolder);
@@ -205,6 +219,9 @@ namespace Shift.EditorTools
 
             SpikePlayerController controller = player.AddComponent<SpikePlayerController>();
             Bind(controller, "_cameraPivot", pivot.transform);
+
+            // Added after the controller so the RequireComponent chain is already satisfied.
+            player.AddComponent<SpikePlatformRider>();
 
             GameObject prefab = PrefabUtility.SaveAsPrefabAsset(player, PlayerPrefabPath);
             Object.DestroyImmediate(player);

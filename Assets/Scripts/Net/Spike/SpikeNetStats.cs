@@ -26,6 +26,8 @@ namespace Shift.Net.Spike
         [SerializeField] private bool _showGroundDebug = true;
 
         private SpikePlayerController _localPlayer;
+        private SpikePlatformRider _localRider;
+        private SpikeDesyncDetector _desyncDetector;
 
         private NetworkTransport _subscribed;
         private long _bytesReceived;
@@ -141,9 +143,62 @@ namespace Shift.Net.Spike
 
             if (manager.IsListening) AppendRtt(manager);
             if (_showGroundDebug) AppendGroundDebug(manager);
+            if (manager.IsListening)
+            {
+                AppendRider();
+                AppendDesync(manager);
+            }
 
-            GUI.Box(new Rect(10f, 10f, 340f, 152f), string.Empty);
-            GUI.Label(new Rect(20f, 16f, 320f, 140f), _builder.ToString());
+            GUI.Box(new Rect(10f, 10f, 400f, 186f), string.Empty);
+            GUI.Label(new Rect(20f, 16f, 380f, 174f), _builder.ToString());
+        }
+
+        /// <summary>
+        /// Attach latency is shown because parenting is server-authoritative: the request costs a
+        /// round trip, and during that window the capsule is still in world space and will slip on a
+        /// moving platform. Guessing at that cost is exactly what this line prevents.
+        /// </summary>
+        private void AppendRider()
+        {
+            if (_localRider == null)
+            {
+                _builder.AppendLine("platform   (no rider)");
+                return;
+            }
+
+            string latency = _localRider.LastAttachMs >= 0f ? $"attach {_localRider.LastAttachMs:F0}ms" : "never attached";
+            string state = _localRider.RiderEnabled ? string.Empty : "  [RIDER OFF]";
+            _builder.AppendLine($"platform   {_localRider.PlatformName}   {latency}{state}");
+        }
+
+        private void AppendDesync(NetworkManager manager)
+        {
+            if (_desyncDetector == null) _desyncDetector = FindFirstObjectByType<SpikeDesyncDetector>();
+
+            if (_desyncDetector == null)
+            {
+                _builder.AppendLine("desync     (no detector)");
+                return;
+            }
+
+            // The host is the reference and SendTo.NotServer excludes it from its own broadcast, so
+            // it never compares. Saying so beats "awaiting first broadcast" forever, and beats a
+            // zero that would read as "verified in sync".
+            if (manager.IsServer)
+            {
+                _builder.AppendLine("desync     broadcasting (host is the reference)");
+                return;
+            }
+
+            if (!_desyncDetector.HasCompared)
+            {
+                _builder.AppendLine("desync     awaiting first broadcast");
+                return;
+            }
+
+            _builder.AppendLine(
+                $"desync     last {_desyncDetector.LastMaxDeviation:F3}m   worst {_desyncDetector.WorstDeviation:F3}m " +
+                $"on {_desyncDetector.WorstBody} @ {_desyncDetector.WorstAt:F0}s  (n={_desyncDetector.LastComparedCount})");
         }
 
         /// <summary>
@@ -156,7 +211,11 @@ namespace Shift.Net.Spike
             if (_localPlayer == null && manager.IsListening && manager.SpawnManager != null)
             {
                 NetworkObject player = manager.SpawnManager.GetLocalPlayerObject();
-                if (player != null) _localPlayer = player.GetComponent<SpikePlayerController>();
+                if (player != null)
+                {
+                    _localPlayer = player.GetComponent<SpikePlayerController>();
+                    _localRider = player.GetComponent<SpikePlatformRider>();
+                }
             }
 
             if (_localPlayer == null)
